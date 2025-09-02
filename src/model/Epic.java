@@ -1,4 +1,4 @@
-package tasktracker.model;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +21,11 @@ public class Epic extends Task {
         throw new UnsupportedOperationException("Статус эпика рассчитывается автоматически");
     }
 
-    // Публичный метод для менеджера
-    public void calculateAndSetStatus(Status status) { this.status = status; }
+    public void updateStatus(Status status) { this.status = status; }
 
     @Override
     public String toString() {
-        return "Epic{name='" + name + "', description='" + description + "', id=" + id + ", status=" + status + ", subtaskIds=" + subtaskIds + "}";
+        return String.format("Epic{name='%s', description='%s', id=%d, status=%s, subtaskIds=%s}",
+                name, description, id, status, subtaskIds);
     }
 }

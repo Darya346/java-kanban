@@ -1,4 +1,4 @@
-package tasktracker.model;
+package model;
 
 public class Subtask extends Task {
     private int epicId;
@@ -13,22 +13,12 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public int getEpicId() {
-        return epicId;
-    }
-
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
-    }
+    public int getEpicId() { return epicId; }
+    public void setEpicId(int epicId) { this.epicId = epicId; }
 
     @Override
     public String toString() {
-        return "Subtask{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                ", epicId=" + epicId +
-                '}';
+        return String.format("Subtask{name='%s', description='%s', id=%d, status=%s, epicId=%d}",
+                name, description, id, status, epicId);
     }
 }
