@@ -1,3 +1,8 @@
+package tasktracker.manager;
+
+import tasktracker.model.Task;
+import tasktracker.model.Epic;
+import tasktracker.model.Subtask;
 import java.util.List;
 
 public interface TaskManager {

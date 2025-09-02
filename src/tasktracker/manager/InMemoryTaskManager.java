@@ -1,3 +1,11 @@
+package tasktracker.manager;
+
+import tasktracker.model.Task;
+import tasktracker.model.Epic;
+import tasktracker.model.Subtask;
+import tasktracker.model.Status;
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -219,44 +227,23 @@ public class InMemoryTaskManager implements TaskManager {
     // Внутренний метод для обновления статуса эпика
     private void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
-        if (epic == null) {
-            return;
-        }
-
+        if (epic == null) return;
         List<Integer> subtaskIds = epic.getSubtaskIds();
         if (subtaskIds.isEmpty()) {
-            epic.updateStatus(Status.NEW);
+            epic.calculateAndSetStatus(Status.NEW); // ИЗМЕНЕНИЕ
             return;
         }
-
         boolean allDone = true;
         boolean allNew = true;
-
         for (Integer subtaskId : subtaskIds) {
             Subtask subtask = subtasks.get(subtaskId);
-            if (subtask == null) {
-                continue;
-            }
-
-            if (subtask.getStatus() != Status.DONE) {
-                allDone = false;
-            }
-            if (subtask.getStatus() != Status.NEW) {
-                allNew = false;
-            }
-
-            // Оптимизация: если уже найдены и не NEW и не DONE, можно прервать
-            if (!allDone && !allNew) {
-                break;
-            }
+            if (subtask == null) continue;
+            if (subtask.getStatus() != Status.DONE) allDone = false;
+            if (subtask.getStatus() != Status.NEW) allNew = false;
+            if (!allDone && !allNew) break;
         }
-
-        if (allDone) {
-            epic.updateStatus(Status.DONE);
-        } else if (allNew) {
-            epic.updateStatus(Status.NEW);
-        } else {
-            epic.updateStatus(Status.IN_PROGRESS);
-        }
+        if (allDone) epic.calculateAndSetStatus(Status.DONE); // ИЗМЕНЕНИЕ
+        else if (allNew) epic.calculateAndSetStatus(Status.NEW); // ИЗМЕНЕНИЕ
+        else epic.calculateAndSetStatus(Status.IN_PROGRESS); // ИЗМЕНЕНИЕ
     }
 }

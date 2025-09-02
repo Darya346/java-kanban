@@ -1,3 +1,12 @@
+package tasktracker;
+
+import tasktracker.manager.TaskManager;
+import tasktracker.manager.InMemoryTaskManager;
+import tasktracker.model.Task;
+import tasktracker.model.Epic;
+import tasktracker.model.Subtask;
+import tasktracker.model.Status;
+
 public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = new InMemoryTaskManager();
