@@ -28,4 +28,7 @@ public interface TaskManager {
     void deleteSubtaskById(int id);
 
     List<Subtask> getSubtasksByEpicId(int epicId);
+
+    // Новый метод для получения истории
+    List<Task> getHistory();
 }

@@ -10,13 +10,54 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
+    private final HistoryManager historyManager;
     private int nextId = 1;
+
+    public InMemoryTaskManager() {
+        this.historyManager = Managers.getDefaultHistory();
+    }
 
     private int generateId() { return nextId++; }
 
+    // Модифицируем методы получения задач для добавления в историю
+    @Override
+    public Task getTaskById(int id) {
+        Task task = tasks.get(id);
+        if (task != null) {
+            historyManager.add(task);
+        }
+        return task;
+    }
+
+    @Override
+    public Epic getEpicById(int id) {
+        Epic epic = epics.get(id);
+        if (epic != null) {
+            historyManager.add(epic);
+        }
+        return epic;
+    }
+
+    @Override
+    public Subtask getSubtaskById(int id) {
+        Subtask subtask = subtasks.get(id);
+        if (subtask != null) {
+            historyManager.add(subtask);
+        }
+        return subtask;
+    }
+
+    // Добавляем метод для получения истории
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    // Остальные методы остаются без изменений...
     @Override public List<Task> getAllTasks() { return new ArrayList<>(tasks.values()); }
-    @Override public void deleteAllTasks() { tasks.clear(); }
-    @Override public Task getTaskById(int id) { return tasks.get(id); }
+
+    @Override
+    public void deleteAllTasks() { tasks.clear(); }
 
     @Override
     public Task createTask(Task task) {
@@ -32,9 +73,11 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.put(task.getId(), task);
     }
 
-    @Override public void deleteTaskById(int id) { tasks.remove(id); }
+    @Override
+    public void deleteTaskById(int id) { tasks.remove(id); }
 
-    @Override public List<Epic> getAllEpics() { return new ArrayList<>(epics.values()); }
+    @Override
+    public List<Epic> getAllEpics() { return new ArrayList<>(epics.values()); }
 
     @Override
     public void deleteAllEpics() {
@@ -45,8 +88,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         epics.clear();
     }
-
-    @Override public Epic getEpicById(int id) { return epics.get(id); }
 
     @Override
     public Epic createEpic(Epic epic) {
@@ -76,7 +117,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override public List<Subtask> getAllSubtasks() { return new ArrayList<>(subtasks.values()); }
+    @Override
+    public List<Subtask> getAllSubtasks() { return new ArrayList<>(subtasks.values()); }
 
     @Override
     public void deleteAllSubtasks() {
@@ -86,8 +128,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subtasks.clear();
     }
-
-    @Override public Subtask getSubtaskById(int id) { return subtasks.get(id); }
 
     @Override
     public Subtask createSubtask(Subtask subtask) {
