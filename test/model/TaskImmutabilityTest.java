@@ -1,4 +1,4 @@
-package manager;
+package model;
 
 import model.Task;
 import model.Status;

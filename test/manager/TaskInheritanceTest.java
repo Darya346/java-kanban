@@ -1,4 +1,4 @@
-package java;
+package manager;
 
 import model.Epic;
 import model.Status;

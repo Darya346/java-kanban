@@ -1,4 +1,4 @@
-package java;
+package model;
 
 import model.Status;
 import model.Task;
