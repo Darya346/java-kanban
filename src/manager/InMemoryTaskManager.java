@@ -163,6 +163,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask == null || !epics.containsKey(subtask.getEpicId())) {
             return null;
         }
+
         Subtask newSubtask = new Subtask(subtask.getName(), subtask.getDescription(),
                 generateId(), subtask.getStatus(), subtask.getEpicId());
         subtasks.put(newSubtask.getId(), newSubtask);
@@ -177,6 +178,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask == null || !subtasks.containsKey(subtask.getId())) {
             return;
         }
+
         Subtask existingSubtask = subtasks.get(subtask.getId());
         int oldEpicId = existingSubtask.getEpicId();
         int newEpicId = subtask.getEpicId();

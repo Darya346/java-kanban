@@ -1,6 +1,8 @@
 package manager;
 
 import model.Task;
+import model.Epic;
+import model.Subtask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,13 +27,35 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task == null) return;
 
-        // Удаляем существующую задачу из истории, если она есть
         remove(task.getId());
 
-        // Добавляем задачу в конец списка
-        Node newNode = linkLast(task);
-        historyMap.put(task.getId(), newNode);
+
+        Task taskCopy = copyTask(task);
+        Node newNode = linkLast(taskCopy);
+        historyMap.put(taskCopy.getId(), newNode);
     }
+
+    private Task copyTask(Task original) {
+        if (original instanceof Epic) {
+            Epic epic = (Epic) original;
+            Epic copy = new Epic(epic.getName(), epic.getDescription());
+            copy.setId(epic.getId());
+            copy.updateStatus(epic.getStatus());
+            // Копируем список подзадач
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                copy.addSubtaskId(subtaskId);
+            }
+            return copy;
+        } else if (original instanceof Subtask) {
+            Subtask subtask = (Subtask) original;
+            return new Subtask(subtask.getName(), subtask.getDescription(),
+                    subtask.getId(), subtask.getStatus(), subtask.getEpicId());
+        } else {
+            return new Task(original.getName(), original.getDescription(),
+                    original.getId(), original.getStatus());
+        }
+    }
+
 
     @Override
     public void remove(int id) {
@@ -51,11 +75,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node newNode = new Node(task);
 
         if (tail == null) {
-            // Список пустой
             head = newNode;
             tail = newNode;
         } else {
-            // Добавляем в конец списка
             tail.next = newNode;
             newNode.prev = tail;
             tail = newNode;
@@ -67,22 +89,18 @@ public class InMemoryHistoryManager implements HistoryManager {
     private void removeNode(Node node) {
         if (node == null) return;
 
-        // Обновляем ссылки соседних узлов
         if (node.prev != null) {
             node.prev.next = node.next;
         } else {
-            // Удаляем голову
             head = node.next;
         }
 
         if (node.next != null) {
             node.next.prev = node.prev;
         } else {
-            // Удаляем хвост
             tail = node.prev;
         }
 
-        // Очищаем ссылки удаляемого узла
         node.prev = null;
         node.next = null;
     }
