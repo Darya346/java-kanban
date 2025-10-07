@@ -13,8 +13,13 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public int getEpicId() { return epicId; }
-    public void setEpicId(int epicId) { this.epicId = epicId; }
+    public int getEpicId() {
+        return epicId;
+    }
+
+    public void setEpicId(int epicId) {
+        this.epicId = epicId;
+    }
 
     @Override
     public String toString() {
