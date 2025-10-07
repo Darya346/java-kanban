@@ -3,7 +3,6 @@ package manager;
 import model.Task;
 import model.Epic;
 import model.Subtask;
-import model.Status;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -21,7 +20,19 @@ public class InMemoryTaskManager implements TaskManager {
         return nextId++;
     }
 
-    // Строка 20 - исправленный метод
+    @Override
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
+    }
+
+    @Override
+    public void deleteAllTasks() {
+        for (Integer taskId : tasks.keySet()) {
+            historyManager.remove(taskId);
+        }
+        tasks.clear();
+    }
+
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
@@ -31,7 +42,51 @@ public class InMemoryTaskManager implements TaskManager {
         return task;
     }
 
-    // Остальные методы get...ById тоже нужно проверить на аналогичные ошибки
+    @Override
+    public Task createTask(Task task) {
+        if (task == null) {
+            return null;
+        }
+        Task newTask = new Task(task.getName(), task.getDescription(), generateId(), task.getStatus());
+        tasks.put(newTask.getId(), newTask);
+        return newTask;
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        if (task == null || !tasks.containsKey(task.getId())) {
+            return;
+        }
+        tasks.put(task.getId(), task);
+    }
+
+    @Override
+    public void deleteTaskById(int id) {
+        tasks.remove(id);
+        historyManager.remove(id);
+    }
+
+    @Override
+    public List<Epic> getAllEpics() {
+        return new ArrayList<>(epics.values());
+    }
+
+    @Override
+    public void deleteAllEpics() {
+        for (Integer epicId : epics.keySet()) {
+            historyManager.remove(epicId);
+        }
+        for (Integer subtaskId : subtasks.keySet()) {
+            historyManager.remove(subtaskId);
+        }
+
+        for (Epic epic : epics.values()) {
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId);
+            }
+        }
+        epics.clear();
+    }
 
     @Override
     public Epic getEpicById(int id) {
@@ -43,27 +98,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubtaskById(int id) {
-        Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
-        }
-        return subtask;
-    }
-
-    // Строка 131 - исправленный метод createTask
-    @Override
-    public Task createTask(Task task) {
-        if (task == null) {
-            return null;
-        }
-        Task newTask = new Task(task.getName(), task.getDescription(), generateId(), task.getStatus());
-        tasks.put(newTask.getId(), newTask);
-        return newTask;
-    }
-
-    // Строка 148 - исправленный метод createEpic
-    @Override
     public Epic createEpic(Epic epic) {
         if (epic == null) {
             return null;
@@ -74,7 +108,56 @@ public class InMemoryTaskManager implements TaskManager {
         return newEpic;
     }
 
-    // Строка 168 - исправленный метод createSubtask
+    @Override
+    public void updateEpic(Epic epic) {
+        if (epic == null || !epics.containsKey(epic.getId())) {
+            return;
+        }
+        Epic existingEpic = epics.get(epic.getId());
+        existingEpic.setName(epic.getName());
+        existingEpic.setDescription(epic.getDescription());
+    }
+
+    @Override
+    public void deleteEpicById(int id) {
+        Epic epic = epics.get(id);
+        if (epic != null) {
+            historyManager.remove(id);
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId);
+                historyManager.remove(subtaskId);
+            }
+            epics.remove(id);
+        }
+    }
+
+    @Override
+    public List<Subtask> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
+    }
+
+    @Override
+    public void deleteAllSubtasks() {
+        for (Integer subtaskId : subtasks.keySet()) {
+            historyManager.remove(subtaskId);
+        }
+
+        for (Epic epic : epics.values()) {
+            epic.clearSubtasks();
+            updateEpicStatus(epic.getId());
+        }
+        subtasks.clear();
+    }
+
+    @Override
+    public Subtask getSubtaskById(int id) {
+        Subtask subtask = subtasks.get(id);
+        if (subtask != null) {
+            historyManager.add(subtask);
+        }
+        return subtask;
+    }
+
     @Override
     public Subtask createSubtask(Subtask subtask) {
         if (subtask == null || !epics.containsKey(subtask.getEpicId())) {
@@ -89,44 +172,98 @@ public class InMemoryTaskManager implements TaskManager {
         return newSubtask;
     }
 
-    // Также проверь другие методы с условиями if - они тоже могут требовать переноса
-
-    @Override
-    public void updateTask(Task task) {
-        if (task == null || !tasks.containsKey(task.getId())) {
-            return;
-        }
-        tasks.put(task.getId(), task);
-    }
-
-    @Override
-    public void updateEpic(Epic epic) {
-        if (epic == null || !epics.containsKey(epic.getId())) {
-            return;
-        }
-        Epic existingEpic = epics.get(epic.getId());
-        existingEpic.setName(epic.getName());
-        existingEpic.setDescription(epic.getDescription());
-    }
-
     @Override
     public void updateSubtask(Subtask subtask) {
         if (subtask == null || !subtasks.containsKey(subtask.getId())) {
             return;
         }
-        // ... остальная логика метода
+        Subtask existingSubtask = subtasks.get(subtask.getId());
+        int oldEpicId = existingSubtask.getEpicId();
+        int newEpicId = subtask.getEpicId();
+
+        if (oldEpicId != newEpicId) {
+            Epic oldEpic = epics.get(oldEpicId);
+            if (oldEpic != null) {
+                oldEpic.removeSubtaskId(subtask.getId());
+                updateEpicStatus(oldEpicId);
+            }
+            Epic newEpic = epics.get(newEpicId);
+            if (newEpic != null) {
+                newEpic.addSubtaskId(subtask.getId());
+            }
+        }
+
+        subtasks.put(subtask.getId(), subtask);
+        updateEpicStatus(subtask.getEpicId());
     }
 
-    // Остальные методы остаются без изменений...
     @Override
-    public List<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
+    public void deleteSubtaskById(int id) {
+        Subtask subtask = subtasks.get(id);
+        if (subtask != null) {
+            Epic epic = epics.get(subtask.getEpicId());
+            if (epic != null) {
+                epic.removeSubtaskId(id);
+                updateEpicStatus(epic.getId());
+            }
+            subtasks.remove(id);
+            historyManager.remove(id);
+        }
     }
 
     @Override
-    public void deleteAllTasks() {
-        tasks.clear();
+    public List<Subtask> getSubtasksByEpicId(int epicId) {
+        List<Subtask> result = new ArrayList<>();
+        Epic epic = epics.get(epicId);
+        if (epic != null) {
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                Subtask subtask = subtasks.get(subtaskId);
+                if (subtask != null) {
+                    result.add(subtask);
+                }
+            }
+        }
+        return result;
     }
 
-    // ... и т.д.
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    private void updateEpicStatus(int epicId) {
+        Epic epic = epics.get(epicId);
+        if (epic == null) {
+            return;
+        }
+        List<Integer> subtaskIds = epic.getSubtaskIds();
+        if (subtaskIds.isEmpty()) {
+            epic.updateStatus(model.Status.NEW);
+            return;
+        }
+        boolean allDone = true;
+        boolean allNew = true;
+        for (Integer subtaskId : subtaskIds) {
+            Subtask subtask = subtasks.get(subtaskId);
+            if (subtask == null) {
+                continue;
+            }
+            if (subtask.getStatus() != model.Status.DONE) {
+                allDone = false;
+            }
+            if (subtask.getStatus() != model.Status.NEW) {
+                allNew = false;
+            }
+            if (!allDone && !allNew) {
+                break;
+            }
+        }
+        if (allDone) {
+            epic.updateStatus(model.Status.DONE);
+        } else if (allNew) {
+            epic.updateStatus(model.Status.NEW);
+        } else {
+            epic.updateStatus(model.Status.IN_PROGRESS);
+        }
+    }
 }
