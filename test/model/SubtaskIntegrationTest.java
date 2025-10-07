@@ -19,12 +19,11 @@ class SubtaskIntegrationTest {
         Epic epic = taskManager.createEpic(new Epic("Test Epic", "Description"));
         Subtask subtask = taskManager.createSubtask(new Subtask("Subtask", "Description", Status.NEW, epic.getId()));
 
-        // Пытаемся изменить epicId подзадачи на её собственный ID
-        subtask.setEpicId(subtask.getId());
-        taskManager.updateSubtask(subtask);
+        // Создаем подзадачу, которая пытается быть своим же эпиком
+        Subtask invalidSubtask = new Subtask("Invalid", "Description", subtask.getId(), Status.NEW, subtask.getId());
 
-        // Epic ID не должен измениться на собственный ID подзадачи
-        assertNotEquals(subtask.getId(), subtask.getEpicId(),
-                "Subtask не должен быть своим же эпиком");
+        // Попытка создания должна вернуть null
+        Subtask result = taskManager.createSubtask(invalidSubtask);
+        assertNull(result, "Subtask не должен быть своим же эпиком");
     }
 }

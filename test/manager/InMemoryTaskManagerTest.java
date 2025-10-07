@@ -224,20 +224,24 @@ class InMemoryTaskManagerTest {
 
         // Все подзадачи NEW - эпик NEW
         Subtask sub1 = taskManager.createSubtask(new Subtask("Sub 1", "Desc", Status.NEW, epic.getId()));
-        assertEquals(Status.NEW, epic.getStatus());
+        Epic updatedEpic1 = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.NEW, updatedEpic1.getStatus());
 
         // Все подзадачи DONE - эпик DONE
         taskManager.updateSubtask(new Subtask("Sub 1", "Desc", sub1.getId(), Status.DONE, epic.getId()));
-        assertEquals(Status.DONE, epic.getStatus());
+        Epic updatedEpic2 = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.DONE, updatedEpic2.getStatus());
 
         // Подзадачи NEW и DONE - эпик IN_PROGRESS
         Subtask sub2 = taskManager.createSubtask(new Subtask("Sub 2", "Desc", Status.NEW, epic.getId()));
-        assertEquals(Status.IN_PROGRESS, epic.getStatus());
+        Epic updatedEpic3 = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.IN_PROGRESS, updatedEpic3.getStatus());
 
         // Все подзадачи IN_PROGRESS - эпик IN_PROGRESS
         taskManager.updateSubtask(new Subtask("Sub 1", "Desc", sub1.getId(), Status.IN_PROGRESS, epic.getId()));
         taskManager.updateSubtask(new Subtask("Sub 2", "Desc", sub2.getId(), Status.IN_PROGRESS, epic.getId()));
-        assertEquals(Status.IN_PROGRESS, epic.getStatus());
+        Epic updatedEpic4 = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.IN_PROGRESS, updatedEpic4.getStatus());
     }
 
     @Test
