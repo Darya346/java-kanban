@@ -201,14 +201,16 @@ public class InMemoryTaskManager implements TaskManager {
 
         Epic epic = epics.get(subtask.getEpicId());
 
-        // Проверка: эпик не может быть своей же подзадачей
-        if (epic != null && subtask.getId() != 0 && epic.getId() == subtask.getId()) {
-            return null;
-        }
-
-        // Проверка: подзадача не может быть своим же эпиком
-        if (subtask.getId() != 0 && subtask.getEpicId() == subtask.getId()) {
-            return null;
+        // Усиленная проверка циклических ссылок
+        if (subtask.getId() != 0) {
+            // Подзадача не может быть своим же эпиком
+            if (subtask.getEpicId() == subtask.getId()) {
+                return null;
+            }
+            // Эпик не может быть своей же подзадачей
+            if (epic.getId() == subtask.getId()) {
+                return null;
+            }
         }
 
         Subtask newSubtask = new Subtask(subtask.getName(), subtask.getDescription(),
@@ -251,9 +253,13 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        subtasks.put(subtask.getId(), subtask);
+        // Обновляем существующую подзадачу, а не заменяем ее
+        existingSubtask.setName(subtask.getName());
+        existingSubtask.setDescription(subtask.getDescription());
+        existingSubtask.setStatus(subtask.getStatus());
+        existingSubtask.setEpicId(subtask.getEpicId());
 
-        // Всегда обновляем статус эпика после изменения подзадачи
+        // Всегда обновляем статус эпика
         updateEpicStatus(subtask.getEpicId());
     }
 
