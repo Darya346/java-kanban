@@ -199,15 +199,21 @@ public class InMemoryTaskManager implements TaskManager {
             return null;
         }
 
+        Epic epic = epics.get(subtask.getEpicId());
+
+        // Проверка: эпик не может быть своей же подзадачей
+        if (epic != null && subtask.getId() != 0 && epic.getId() == subtask.getId()) {
+            return null;
+        }
+
         // Проверка: подзадача не может быть своим же эпиком
-        if (subtask.getEpicId() == subtask.getId()) {
+        if (subtask.getId() != 0 && subtask.getEpicId() == subtask.getId()) {
             return null;
         }
 
         Subtask newSubtask = new Subtask(subtask.getName(), subtask.getDescription(),
                 generateId(), subtask.getStatus(), subtask.getEpicId());
         subtasks.put(newSubtask.getId(), newSubtask);
-        Epic epic = epics.get(newSubtask.getEpicId());
         epic.addSubtaskId(newSubtask.getId());
         updateEpicStatus(epic.getId());
         return createSubtaskCopy(newSubtask);
@@ -246,6 +252,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         subtasks.put(subtask.getId(), subtask);
+
+        // Всегда обновляем статус эпика после изменения подзадачи
         updateEpicStatus(subtask.getEpicId());
     }
 
