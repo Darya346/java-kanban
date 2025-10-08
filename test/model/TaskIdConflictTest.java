@@ -1,7 +1,5 @@
 package model;
 
-import model.Task;
-import model.Status;
 import manager.InMemoryTaskManager;
 import manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,28 +15,23 @@ class TaskIdConflictTest {
     }
 
     @Test
-    void noConflictBetweenGeneratedAndManualIds() {
-        // Создаем задачу с автоматически сгенерированным ID
+    void testNoIdConflict() {
         Task autoTask = taskManager.createTask(new Task("Auto", "Description", Status.NEW));
 
-        // Создаем задачу вручную с таким же ID
         Task manualTask = new Task("Manual", "Description", autoTask.getId(), Status.NEW);
 
-        // Пытаемся обновить задачу с существующим ID
         taskManager.updateTask(manualTask);
 
-        // Проверяем, что задача обновилась, а не создалась новая
-        assertEquals(1, taskManager.getAllTasks().size(), "Должна остаться одна задача");
-        assertEquals("Manual", taskManager.getTaskById(autoTask.getId()).getName(),
-                "Задача должна быть обновлена, а не создана новая");
+        assertEquals(1, taskManager.getAllTasks().size());
+        assertEquals("Manual", taskManager.getTaskById(autoTask.getId()).getName());
     }
 
     @Test
-    void tasksWithDifferentIdsCoexist() {
+    void testDifferentIds() {
         Task task1 = taskManager.createTask(new Task("Task 1", "Description", Status.NEW));
         Task task2 = taskManager.createTask(new Task("Task 2", "Description", Status.NEW));
 
-        assertNotEquals(task1.getId(), task2.getId(), "Задачи должны иметь разные ID");
-        assertEquals(2, taskManager.getAllTasks().size(), "Обе задачи должны существовать");
+        assertNotEquals(task1.getId(), task2.getId());
+        assertEquals(2, taskManager.getAllTasks().size());
     }
 }
