@@ -95,20 +95,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             // Сохраняем все задачи
             for (Task task : getAllTasks()) {
-                writer.println(toString(task));
+                writer.println(taskToString(task));
             }
             for (Epic epic : getAllEpics()) {
-                writer.println(toString(epic));
+                writer.println(taskToString(epic));
             }
             for (Subtask subtask : getAllSubtasks()) {
-                writer.println(toString(subtask));
+                writer.println(taskToString(subtask));
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения в файл", e);
         }
     }
 
-    private String toString(Task task) {
+    private String taskToString(Task task) {
         if (task instanceof Epic) {
             return String.format("%d,EPIC,%s,%s,%s,",
                     task.getId(),
@@ -132,7 +132,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private Task fromString(String value) {
+    private Task taskFromString(String value) {
         String[] fields = value.split(",", -1); // -1 чтобы сохранить пустые поля
         int id = Integer.parseInt(fields[0]);
         TaskType type = TaskType.valueOf(fields[1]);
@@ -156,7 +156,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 subtask.setId(id);
                 return subtask;
             default:
-                throw new IllegalArgumentException("Неизвестный тип задачи: " + type);
+                throw new IllegalArgumentException(String.format("Неизвестный тип задачи: %s", type));
         }
     }
 
@@ -169,16 +169,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
             String content = Files.readString(file.toPath());
-            String[] lines = content.split("\n");
+            String[] fileLines = content.split("\n");
 
             // Пропускаем заголовок и пустые строки
-            for (int i = 1; i < lines.length; i++) {
-                String line = lines[i].trim();
-                if (line.isEmpty()) {
+            for (int lineNumber = 1; lineNumber < fileLines.length; lineNumber++) {
+                String currentLine = fileLines[lineNumber].trim();
+                if (currentLine.isEmpty()) {
                     continue;
                 }
 
-                Task task = manager.fromString(line);
+                Task task = manager.taskFromString(currentLine);
                 if (task instanceof Epic) {
                     manager.epics.put(task.getId(), (Epic) task);
                 } else if (task instanceof Subtask) {
