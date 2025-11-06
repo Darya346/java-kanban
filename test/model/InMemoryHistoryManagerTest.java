@@ -89,4 +89,65 @@ class InMemoryHistoryManagerTest {
     void testEmptyHistory() {
         assertTrue(historyManager.getHistory().isEmpty());
     }
+
+    // Новые тесты для спринта 8
+    @Test
+    void testRemoveFromBeginning() {
+        Task task1 = createTask(1, "Task 1");
+        Task task2 = createTask(2, "Task 2");
+        Task task3 = createTask(3, "Task 3");
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(1);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task2.getId(), history.get(0).getId());
+        assertEquals(task3.getId(), history.get(1).getId());
+    }
+
+    @Test
+    void testRemoveFromMiddle() {
+        Task task1 = createTask(1, "Task 1");
+        Task task2 = createTask(2, "Task 2");
+        Task task3 = createTask(3, "Task 3");
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task1.getId(), history.get(0).getId());
+        assertEquals(task3.getId(), history.get(1).getId());
+    }
+
+    @Test
+    void testRemoveFromEnd() {
+        Task task1 = createTask(1, "Task 1");
+        Task task2 = createTask(2, "Task 2");
+        Task task3 = createTask(3, "Task 3");
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(3);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task1.getId(), history.get(0).getId());
+        assertEquals(task2.getId(), history.get(1).getId());
+    }
+
+    private Task createTask(int id, String name) {
+        Task task = new Task(name, "Description", Status.NEW);
+        task.setId(id);
+        return task;
+    }
 }

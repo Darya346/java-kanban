@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 class InMemoryTaskManagerTest {
     private TaskManager taskManager;
@@ -394,5 +396,66 @@ class InMemoryTaskManagerTest {
     void testGetSubtasksBadEpic() {
         List<Subtask> subtasks = taskManager.getSubtasksByEpicId(999);
         assertTrue(subtasks.isEmpty());
+    }
+
+    // Новые тесты для спринта 8
+    @Test
+    void testCreateTaskWithTime() {
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(30);
+        Task task = new Task("Test Task", "Test Description", Status.NEW, duration, startTime);
+        Task createdTask = taskManager.createTask(task);
+
+        assertNotNull(createdTask);
+        assertEquals(duration, createdTask.getDuration());
+        assertEquals(startTime, createdTask.getStartTime());
+        assertEquals(startTime.plus(duration), createdTask.getEndTime());
+    }
+
+    @Test
+    void testGetPrioritizedTasks() {
+        LocalDateTime now = LocalDateTime.now();
+
+        Task task1 = taskManager.createTask(new Task("Task 1", "Description", Status.NEW,
+                Duration.ofMinutes(30), now.plusHours(2)));
+        Task task2 = taskManager.createTask(new Task("Task 2", "Description", Status.NEW,
+                Duration.ofMinutes(45), now.plusHours(1)));
+        Task task3 = taskManager.createTask(new Task("Task 3", "Description", Status.NEW,
+                Duration.ofMinutes(15), null));
+
+        List<Task> prioritized = taskManager.getPrioritizedTasks();
+
+        assertEquals(2, prioritized.size());
+        assertEquals(task2.getId(), prioritized.get(0).getId());
+        assertEquals(task1.getId(), prioritized.get(1).getId());
+    }
+
+    @Test
+    void testTaskOverlapping() {
+        LocalDateTime baseTime = LocalDateTime.now();
+
+        Task task1 = taskManager.createTask(new Task("Task 1", "Description", Status.NEW,
+                Duration.ofMinutes(60), baseTime));
+
+        Task overlappingTask = new Task("Overlapping", "Description", Status.NEW,
+                Duration.ofMinutes(30), baseTime.plusMinutes(30));
+
+        assertTrue(taskManager.isTaskOverlapping(overlappingTask));
+    }
+
+    @Test
+    void testCreateOverlappingTaskShouldFail() {
+        LocalDateTime baseTime = LocalDateTime.now();
+
+        taskManager.createTask(new Task("Task 1", "Description", Status.NEW,
+                Duration.ofMinutes(60), baseTime));
+
+        Task overlappingTask = new Task("Overlapping", "Description", Status.NEW,
+                Duration.ofMinutes(30), baseTime.plusMinutes(30));
+
+        Task result = taskManager.createTask(overlappingTask);
+
+        assertNull(result);
+        assertEquals(1, taskManager.getAllTasks().size());
     }
 }
