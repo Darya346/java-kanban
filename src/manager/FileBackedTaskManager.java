@@ -111,15 +111,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String taskToString(Task task) {
-        String durationStr = task.getDuration() != null ?
-                String.valueOf(task.getDuration().toMinutes()) : "";
-        String startTimeStr = task.getStartTime() != null ?
-                task.getStartTime().format(DATE_TIME_FORMATTER) : "";
+        String durationStr = task.getDuration() != null
+                ? String.valueOf(task.getDuration().toMinutes()) : "";
+        String startTimeStr = task.getStartTime() != null
+                ? task.getStartTime().format(DATE_TIME_FORMATTER) : "";
 
         if (task instanceof Epic) {
             Epic epic = (Epic) task;
-            String endTimeStr = epic.getEndTime() != null ?
-                    epic.getEndTime().format(DATE_TIME_FORMATTER) : "";
+            String endTimeStr = epic.getEndTime() != null
+                    ? epic.getEndTime().format(DATE_TIME_FORMATTER) : "";
             return String.format("%d,EPIC,%s,%s,%s,,%s,%s,%s",
                     task.getId(),
                     task.getName(),
@@ -157,10 +157,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(fields[3]);
         String description = fields[4];
 
-        Duration duration = fields[6].isEmpty() ? Duration.ZERO :
-                Duration.ofMinutes(Long.parseLong(fields[6]));
-        LocalDateTime startTime = fields[7].isEmpty() ? null :
-                LocalDateTime.parse(fields[7], DATE_TIME_FORMATTER);
+        Duration duration = fields[6].isEmpty() ? Duration.ZERO
+                : Duration.ofMinutes(Long.parseLong(fields[6]));
+        LocalDateTime startTime = fields[7].isEmpty() ? null
+                : LocalDateTime.parse(fields[7], DATE_TIME_FORMATTER);
 
         switch (type) {
             case TASK:

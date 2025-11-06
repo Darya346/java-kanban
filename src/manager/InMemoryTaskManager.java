@@ -63,13 +63,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean isTasksOverlapping(Task task1, Task task2) {
-        if (task1.getStartTime() == null || task2.getStartTime() == null ||
-                task1.getEndTime() == null || task2.getEndTime() == null) {
+        if (task1.getStartTime() == null || task2.getStartTime() == null
+                || task1.getEndTime() == null || task2.getEndTime() == null) {
             return false;
         }
 
-        return !task1.getEndTime().isBefore(task2.getStartTime()) &&
-                !task1.getStartTime().isAfter(task2.getEndTime());
+        return !task1.getEndTime().isBefore(task2.getStartTime())
+                && !task1.getStartTime().isAfter(task2.getEndTime());
     }
 
     @Override
