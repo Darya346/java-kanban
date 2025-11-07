@@ -256,17 +256,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
 
-            System.out.println("Проверка восстановления данных:");
-            System.out.println("Задачи в manager2: " + manager2.getAllTasks().size());
-            System.out.println("Эпики в manager2: " + manager2.getAllEpics().size());
-            System.out.println("Подзадачи в manager2: " + manager2.getAllSubtasks().size());
-            System.out.println("История в manager2: " + manager2.getHistory().size());
-            System.out.println("Приоритетные задачи в manager2: " + manager2.getPrioritizedTasks().size());
+            System.out.println(String.format("Проверка восстановления данных:"));
+            System.out.println(String.format("Задачи в manager2: %d", manager2.getAllTasks().size()));
+            System.out.println(String.format("Эпики в manager2: %d", manager2.getAllEpics().size()));
+            System.out.println(String.format("Подзадачи в manager2: %d", manager2.getAllSubtasks().size()));
+            System.out.println(String.format("История в manager2: %d", manager2.getHistory().size()));
+            System.out.println(String.format("Приоритетные задачи в manager2: %d", manager2.getPrioritizedTasks().size()));
 
             tempFile.deleteOnExit();
 
         } catch (IOException e) {
-            System.err.println("Ошибка при работе с файлом: " + e.getMessage());
+            System.err.println(String.format("Ошибка при работе с файлом: %s", e.getMessage()));
         }
     }
 }
