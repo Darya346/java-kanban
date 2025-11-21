@@ -27,20 +27,21 @@ public class HttpTaskServer {
             server.createContext("/prioritized", new PrioritizedHandler(taskManager));
 
             server.start();
-            System.out.println("HTTP Task Server запущен на порту " + PORT);
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось запустить HTTP сервер", e);
+            System.out.println(String.format("HTTP Task Server запущен на порту %d", PORT));
+            System.out.println(String.format("Доступные эндпоинты: /tasks, /epics, /subtasks, /history, /prioritized"));
+        } catch (IOException exception) {
+            throw new RuntimeException(String.format("Не удалось запустить HTTP сервер на порту %d", PORT), exception);
         }
     }
 
     public void stop() {
         if (server != null) {
             server.stop(0);
-            System.out.println("HTTP Task Server остановлен");
+            System.out.println(String.format("HTTP Task Server остановлен"));
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] arguments) {
         TaskManager manager = Managers.getDefault();
         HttpTaskServer server = new HttpTaskServer(manager);
         server.start();

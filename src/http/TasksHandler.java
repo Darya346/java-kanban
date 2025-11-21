@@ -33,7 +33,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                 default:
                     sendBadRequest(exchange, "Метод не поддерживается");
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             sendInternalError(exchange);
         }
     }
@@ -45,9 +45,9 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
             sendText(exchange, response);
         } else if (path.matches("/tasks/\\d+")) {
             String[] pathParts = path.split("/");
-            int id = Integer.parseInt(pathParts[2]);
+            int taskId = Integer.parseInt(pathParts[2]);
 
-            Task task = taskManager.getTaskById(id);
+            Task task = taskManager.getTaskById(taskId);
             if (task != null) {
                 String response = JsonConverter.taskToJson(task);
                 sendText(exchange, response);
@@ -60,8 +60,8 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handlePost(HttpExchange exchange) throws IOException {
-        String body = readRequestBody(exchange);
-        Task task = JsonConverter.taskFromJson(body);
+        String requestBody = readRequestBody(exchange);
+        Task task = JsonConverter.taskFromJson(requestBody);
 
         if (task == null) {
             sendBadRequest(exchange, "Неверный формат задачи");
@@ -70,8 +70,8 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
         if (task.getId() == 0) {
             // Создание новой задачи
-            Task created = taskManager.createTask(task);
-            if (created != null) {
+            Task createdTask = taskManager.createTask(task);
+            if (createdTask != null) {
                 sendSuccess(exchange);
             } else {
                 if (taskManager.isTaskOverlapping(task)) {
@@ -93,11 +93,11 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
             sendSuccess(exchange);
         } else if (path.matches("/tasks/\\d+")) {
             String[] pathParts = path.split("/");
-            int id = Integer.parseInt(pathParts[2]);
+            int taskId = Integer.parseInt(pathParts[2]);
 
-            Task task = taskManager.getTaskById(id);
+            Task task = taskManager.getTaskById(taskId);
             if (task != null) {
-                taskManager.deleteTaskById(id);
+                taskManager.deleteTaskById(taskId);
                 sendSuccess(exchange);
             } else {
                 sendNotFound(exchange);

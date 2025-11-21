@@ -152,17 +152,17 @@ public class JsonConverter {
 
             // Простой парсинг JSON
             String cleanJson = json.trim().replaceAll("[{}\"]", "");
-            String[] pairs = cleanJson.split(",");
+            String[] keyValuePairs = cleanJson.split(",");
 
-            int id = 0;
-            String name = "";
-            String description = "";
-            Status status = Status.NEW;
-            Duration duration = Duration.ZERO;
-            LocalDateTime startTime = null;
+            int taskId = 0;
+            String taskName = "";
+            String taskDescription = "";
+            Status taskStatus = Status.NEW;
+            Duration taskDuration = Duration.ZERO;
+            LocalDateTime taskStartTime = null;
 
-            for (String pair : pairs) {
-                String[] keyValue = pair.split(":", 2);
+            for (String keyValuePair : keyValuePairs) {
+                String[] keyValue = keyValuePair.split(":", 2);
                 if (keyValue.length != 2) continue;
 
                 String key = keyValue[0].trim();
@@ -170,34 +170,34 @@ public class JsonConverter {
 
                 switch (key) {
                     case "id":
-                        id = Integer.parseInt(value);
+                        taskId = Integer.parseInt(value);
                         break;
                     case "name":
-                        name = unescapeJson(value);
+                        taskName = unescapeJson(value);
                         break;
                     case "description":
-                        description = unescapeJson(value);
+                        taskDescription = unescapeJson(value);
                         break;
                     case "status":
-                        status = Status.valueOf(value);
+                        taskStatus = Status.valueOf(value);
                         break;
                     case "duration":
-                        duration = Duration.ofMinutes(Long.parseLong(value));
+                        taskDuration = Duration.ofMinutes(Long.parseLong(value));
                         break;
                     case "startTime":
                         if (!value.equals("null")) {
-                            startTime = LocalDateTime.parse(value);
+                            taskStartTime = LocalDateTime.parse(value);
                         }
                         break;
                 }
             }
 
-            if (id == 0) {
-                return new Task(name, description, status, duration, startTime);
+            if (taskId == 0) {
+                return new Task(taskName, taskDescription, taskStatus, taskDuration, taskStartTime);
             } else {
-                return new Task(name, description, id, status, duration, startTime);
+                return new Task(taskName, taskDescription, taskId, taskStatus, taskDuration, taskStartTime);
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return null;
         }
     }
@@ -209,18 +209,18 @@ public class JsonConverter {
             }
 
             String cleanJson = json.trim().replaceAll("[{}\"]", "");
-            String[] pairs = cleanJson.split(",");
+            String[] keyValuePairs = cleanJson.split(",");
 
-            int id = 0;
-            String name = "";
-            String description = "";
-            Status status = Status.NEW;
-            Duration duration = Duration.ZERO;
-            LocalDateTime startTime = null;
-            LocalDateTime endTime = null;
+            int epicId = 0;
+            String epicName = "";
+            String epicDescription = "";
+            Status epicStatus = Status.NEW;
+            Duration epicDuration = Duration.ZERO;
+            LocalDateTime epicStartTime = null;
+            LocalDateTime epicEndTime = null;
 
-            for (String pair : pairs) {
-                String[] keyValue = pair.split(":", 2);
+            for (String keyValuePair : keyValuePairs) {
+                String[] keyValue = keyValuePair.split(":", 2);
                 if (keyValue.length != 2) continue;
 
                 String key = keyValue[0].trim();
@@ -228,42 +228,42 @@ public class JsonConverter {
 
                 switch (key) {
                     case "id":
-                        id = Integer.parseInt(value);
+                        epicId = Integer.parseInt(value);
                         break;
                     case "name":
-                        name = unescapeJson(value);
+                        epicName = unescapeJson(value);
                         break;
                     case "description":
-                        description = unescapeJson(value);
+                        epicDescription = unescapeJson(value);
                         break;
                     case "status":
-                        status = Status.valueOf(value);
+                        epicStatus = Status.valueOf(value);
                         break;
                     case "duration":
-                        duration = Duration.ofMinutes(Long.parseLong(value));
+                        epicDuration = Duration.ofMinutes(Long.parseLong(value));
                         break;
                     case "startTime":
                         if (!value.equals("null")) {
-                            startTime = LocalDateTime.parse(value);
+                            epicStartTime = LocalDateTime.parse(value);
                         }
                         break;
                     case "endTime":
                         if (!value.equals("null")) {
-                            endTime = LocalDateTime.parse(value);
+                            epicEndTime = LocalDateTime.parse(value);
                         }
                         break;
                 }
             }
 
             Epic epic;
-            if (id == 0) {
-                epic = new Epic(name, description);
+            if (epicId == 0) {
+                epic = new Epic(epicName, epicDescription);
             } else {
-                epic = new Epic(name, description, id, status, duration, startTime, endTime);
+                epic = new Epic(epicName, epicDescription, epicId, epicStatus, epicDuration, epicStartTime, epicEndTime);
             }
 
             return epic;
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return null;
         }
     }
@@ -275,18 +275,18 @@ public class JsonConverter {
             }
 
             String cleanJson = json.trim().replaceAll("[{}\"]", "");
-            String[] pairs = cleanJson.split(",");
+            String[] keyValuePairs = cleanJson.split(",");
 
-            int id = 0;
-            String name = "";
-            String description = "";
-            Status status = Status.NEW;
-            int epicId = 0;
-            Duration duration = Duration.ZERO;
-            LocalDateTime startTime = null;
+            int subtaskId = 0;
+            String subtaskName = "";
+            String subtaskDescription = "";
+            Status subtaskStatus = Status.NEW;
+            int subtaskEpicId = 0;
+            Duration subtaskDuration = Duration.ZERO;
+            LocalDateTime subtaskStartTime = null;
 
-            for (String pair : pairs) {
-                String[] keyValue = pair.split(":", 2);
+            for (String keyValuePair : keyValuePairs) {
+                String[] keyValue = keyValuePair.split(":", 2);
                 if (keyValue.length != 2) continue;
 
                 String key = keyValue[0].trim();
@@ -294,53 +294,53 @@ public class JsonConverter {
 
                 switch (key) {
                     case "id":
-                        id = Integer.parseInt(value);
+                        subtaskId = Integer.parseInt(value);
                         break;
                     case "name":
-                        name = unescapeJson(value);
+                        subtaskName = unescapeJson(value);
                         break;
                     case "description":
-                        description = unescapeJson(value);
+                        subtaskDescription = unescapeJson(value);
                         break;
                     case "status":
-                        status = Status.valueOf(value);
+                        subtaskStatus = Status.valueOf(value);
                         break;
                     case "epicId":
-                        epicId = Integer.parseInt(value);
+                        subtaskEpicId = Integer.parseInt(value);
                         break;
                     case "duration":
-                        duration = Duration.ofMinutes(Long.parseLong(value));
+                        subtaskDuration = Duration.ofMinutes(Long.parseLong(value));
                         break;
                     case "startTime":
                         if (!value.equals("null")) {
-                            startTime = LocalDateTime.parse(value);
+                            subtaskStartTime = LocalDateTime.parse(value);
                         }
                         break;
                 }
             }
 
-            if (id == 0) {
-                return new Subtask(name, description, status, epicId, duration, startTime);
+            if (subtaskId == 0) {
+                return new Subtask(subtaskName, subtaskDescription, subtaskStatus, subtaskEpicId, subtaskDuration, subtaskStartTime);
             } else {
-                return new Subtask(name, description, id, status, epicId, duration, startTime);
+                return new Subtask(subtaskName, subtaskDescription, subtaskId, subtaskStatus, subtaskEpicId, subtaskDuration, subtaskStartTime);
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return null;
         }
     }
 
-    private static String escapeJson(String str) {
-        if (str == null) return "";
-        return str.replace("\\", "\\\\")
+    private static String escapeJson(String inputString) {
+        if (inputString == null) return "";
+        return inputString.replace("\\", "\\\\")
                 .replace("\"", "\\\"")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
     }
 
-    private static String unescapeJson(String str) {
-        if (str == null) return "";
-        return str.replace("\\\"", "\"")
+    private static String unescapeJson(String inputString) {
+        if (inputString == null) return "";
+        return inputString.replace("\\\"", "\"")
                 .replace("\\\\", "\\")
                 .replace("\\n", "\n")
                 .replace("\\r", "\r")

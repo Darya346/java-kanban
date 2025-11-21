@@ -21,7 +21,7 @@ public class BaseHttpHandler {
     }
 
     protected void sendNotFound(HttpExchange exchange) throws IOException {
-        String response = "{\"error\": \"Объект не найден\"}";
+        String response = String.format("{\"error\": \"%s\"}", "Объект не найден");
         byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(404, bytes.length);
@@ -30,7 +30,7 @@ public class BaseHttpHandler {
     }
 
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
-        String response = "{\"error\": \"Задача пересекается с существующими\"}";
+        String response = String.format("{\"error\": \"%s\"}", "Задача пересекается с существующими");
         byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(406, bytes.length);
@@ -39,7 +39,7 @@ public class BaseHttpHandler {
     }
 
     protected void sendInternalError(HttpExchange exchange) throws IOException {
-        String response = "{\"error\": \"Внутренняя ошибка сервера\"}";
+        String response = String.format("{\"error\": \"%s\"}", "Внутренняя ошибка сервера");
         byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(500, bytes.length);
@@ -48,7 +48,7 @@ public class BaseHttpHandler {
     }
 
     protected void sendBadRequest(HttpExchange exchange, String message) throws IOException {
-        String response = "{\"error\": \"" + message + "\"}";
+        String response = String.format("{\"error\": \"%s\"}", message);
         byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(400, bytes.length);
