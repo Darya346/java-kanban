@@ -13,135 +13,135 @@ public class JsonConverter {
     public static String taskToJson(Task task) {
         if (task == null) return "null";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"id\":").append(task.getId()).append(",");
-        sb.append("\"name\":\"").append(escapeJson(task.getName())).append("\",");
-        sb.append("\"description\":\"").append(escapeJson(task.getDescription())).append("\",");
-        sb.append("\"status\":\"").append(task.getStatus()).append("\",");
-        sb.append("\"type\":\"TASK\",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("{");
+        jsonBuilder.append("\"id\":").append(task.getId()).append(",");
+        jsonBuilder.append("\"name\":\"").append(escapeJson(task.getName())).append("\",");
+        jsonBuilder.append("\"description\":\"").append(escapeJson(task.getDescription())).append("\",");
+        jsonBuilder.append("\"status\":\"").append(task.getStatus()).append("\",");
+        jsonBuilder.append("\"type\":\"TASK\",");
 
         if (task.getDuration() != null) {
-            sb.append("\"duration\":").append(task.getDuration().toMinutes()).append(",");
+            jsonBuilder.append("\"duration\":").append(task.getDuration().toMinutes()).append(",");
         } else {
-            sb.append("\"duration\":0,");
+            jsonBuilder.append("\"duration\":0,");
         }
 
         if (task.getStartTime() != null) {
-            sb.append("\"startTime\":\"").append(task.getStartTime()).append("\"");
+            jsonBuilder.append("\"startTime\":\"").append(task.getStartTime()).append("\"");
         } else {
-            sb.append("\"startTime\":null");
+            jsonBuilder.append("\"startTime\":null");
         }
 
-        sb.append("}");
-        return sb.toString();
+        jsonBuilder.append("}");
+        return jsonBuilder.toString();
     }
 
     public static String epicToJson(Epic epic) {
         if (epic == null) return "null";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"id\":").append(epic.getId()).append(",");
-        sb.append("\"name\":\"").append(escapeJson(epic.getName())).append("\",");
-        sb.append("\"description\":\"").append(escapeJson(epic.getDescription())).append("\",");
-        sb.append("\"status\":\"").append(epic.getStatus()).append("\",");
-        sb.append("\"type\":\"EPIC\",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("{");
+        jsonBuilder.append("\"id\":").append(epic.getId()).append(",");
+        jsonBuilder.append("\"name\":\"").append(escapeJson(epic.getName())).append("\",");
+        jsonBuilder.append("\"description\":\"").append(escapeJson(epic.getDescription())).append("\",");
+        jsonBuilder.append("\"status\":\"").append(epic.getStatus()).append("\",");
+        jsonBuilder.append("\"type\":\"EPIC\",");
 
         if (epic.getDuration() != null) {
-            sb.append("\"duration\":").append(epic.getDuration().toMinutes()).append(",");
+            jsonBuilder.append("\"duration\":").append(epic.getDuration().toMinutes()).append(",");
         } else {
-            sb.append("\"duration\":0,");
+            jsonBuilder.append("\"duration\":0,");
         }
 
         if (epic.getStartTime() != null) {
-            sb.append("\"startTime\":\"").append(epic.getStartTime()).append("\",");
+            jsonBuilder.append("\"startTime\":\"").append(epic.getStartTime()).append("\",");
         } else {
-            sb.append("\"startTime\":null,");
+            jsonBuilder.append("\"startTime\":null,");
         }
 
         if (epic.getEndTime() != null) {
-            sb.append("\"endTime\":\"").append(epic.getEndTime()).append("\",");
+            jsonBuilder.append("\"endTime\":\"").append(epic.getEndTime()).append("\",");
         } else {
-            sb.append("\"endTime\":null,");
+            jsonBuilder.append("\"endTime\":null,");
         }
 
-        sb.append("\"subtaskIds\":").append(epic.getSubtaskIds().toString());
-        sb.append("}");
-        return sb.toString();
+        jsonBuilder.append("\"subtaskIds\":").append(epic.getSubtaskIds().toString());
+        jsonBuilder.append("}");
+        return jsonBuilder.toString();
     }
 
     public static String subtaskToJson(Subtask subtask) {
         if (subtask == null) return "null";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"id\":").append(subtask.getId()).append(",");
-        sb.append("\"name\":\"").append(escapeJson(subtask.getName())).append("\",");
-        sb.append("\"description\":\"").append(escapeJson(subtask.getDescription())).append("\",");
-        sb.append("\"status\":\"").append(subtask.getStatus()).append("\",");
-        sb.append("\"type\":\"SUBTASK\",");
-        sb.append("\"epicId\":").append(subtask.getEpicId()).append(",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("{");
+        jsonBuilder.append("\"id\":").append(subtask.getId()).append(",");
+        jsonBuilder.append("\"name\":\"").append(escapeJson(subtask.getName())).append("\",");
+        jsonBuilder.append("\"description\":\"").append(escapeJson(subtask.getDescription())).append("\",");
+        jsonBuilder.append("\"status\":\"").append(subtask.getStatus()).append("\",");
+        jsonBuilder.append("\"type\":\"SUBTASK\",");
+        jsonBuilder.append("\"epicId\":").append(subtask.getEpicId()).append(",");
 
         if (subtask.getDuration() != null) {
-            sb.append("\"duration\":").append(subtask.getDuration().toMinutes()).append(",");
+            jsonBuilder.append("\"duration\":").append(subtask.getDuration().toMinutes()).append(",");
         } else {
-            sb.append("\"duration\":0,");
+            jsonBuilder.append("\"duration\":0,");
         }
 
         if (subtask.getStartTime() != null) {
-            sb.append("\"startTime\":\"").append(subtask.getStartTime()).append("\"");
+            jsonBuilder.append("\"startTime\":\"").append(subtask.getStartTime()).append("\"");
         } else {
-            sb.append("\"startTime\":null");
+            jsonBuilder.append("\"startTime\":null");
         }
 
-        sb.append("}");
-        return sb.toString();
+        jsonBuilder.append("}");
+        return jsonBuilder.toString();
     }
 
     public static String tasksToJson(List<Task> tasks) {
         if (tasks == null) return "[]";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < tasks.size(); i++) {
-            sb.append(taskToJson(tasks.get(i)));
-            if (i < tasks.size() - 1) {
-                sb.append(",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("[");
+        for (int taskIndex = 0; taskIndex < tasks.size(); taskIndex++) {
+            jsonBuilder.append(taskToJson(tasks.get(taskIndex)));
+            if (taskIndex < tasks.size() - 1) {
+                jsonBuilder.append(",");
             }
         }
-        sb.append("]");
-        return sb.toString();
+        jsonBuilder.append("]");
+        return jsonBuilder.toString();
     }
 
     public static String epicsToJson(List<Epic> epics) {
         if (epics == null) return "[]";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < epics.size(); i++) {
-            sb.append(epicToJson(epics.get(i)));
-            if (i < epics.size() - 1) {
-                sb.append(",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("[");
+        for (int epicIndex = 0; epicIndex < epics.size(); epicIndex++) {
+            jsonBuilder.append(epicToJson(epics.get(epicIndex)));
+            if (epicIndex < epics.size() - 1) {
+                jsonBuilder.append(",");
             }
         }
-        sb.append("]");
-        return sb.toString();
+        jsonBuilder.append("]");
+        return jsonBuilder.toString();
     }
 
     public static String subtasksToJson(List<Subtask> subtasks) {
         if (subtasks == null) return "[]";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < subtasks.size(); i++) {
-            sb.append(subtaskToJson(subtasks.get(i)));
-            if (i < subtasks.size() - 1) {
-                sb.append(",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("[");
+        for (int subtaskIndex = 0; subtaskIndex < subtasks.size(); subtaskIndex++) {
+            jsonBuilder.append(subtaskToJson(subtasks.get(subtaskIndex)));
+            if (subtaskIndex < subtasks.size() - 1) {
+                jsonBuilder.append(",");
             }
         }
-        sb.append("]");
-        return sb.toString();
+        jsonBuilder.append("]");
+        return jsonBuilder.toString();
     }
 
     public static Task taskFromJson(String json) {
