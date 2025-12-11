@@ -1,8 +1,9 @@
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
-// Аннотация запускает автоматическую настройку и сканирование компонентов
 @SpringBootApplication
+@ComponentScan(basePackages = {"controllers", "model", "exception"})
 public class FilmorateApplication {
     public static void main(String[] args) {
         SpringApplication.run(FilmorateApplication.class, args);
