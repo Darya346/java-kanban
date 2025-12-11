@@ -1,7 +1,7 @@
 package manager;
 
 import model.*;
-import model.TaskType;
+import manager.TaskType;
 
 import java.io.*;
 import java.nio.file.Files;
