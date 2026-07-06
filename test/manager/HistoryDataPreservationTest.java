@@ -15,39 +15,30 @@ class HistoryDataPreservationTest {
     }
 
     @Test
-    void historyPreservesTaskData() {
-        // Создаем задачу
+    void historyKeepsData() {
         Task originalTask = new Task("Original", "Original Description", 1, Status.NEW);
 
-        // Добавляем в историю
         historyManager.add(originalTask);
 
-        // Изменяем оригинальную задачу
         originalTask.setName("Modified");
         originalTask.setDescription("Modified Description");
         originalTask.setStatus(Status.DONE);
 
-        // Получаем задачу из истории
         Task historicalTask = historyManager.getHistory().get(0);
 
-        // Проверяем, что данные в истории сохранились оригинальными
-        assertEquals("Original", historicalTask.getName(), "История должна сохранить оригинальное имя");
-        assertEquals("Original Description", historicalTask.getDescription(),
-                "История должна сохранить оригинальное описание");
-        assertEquals(Status.NEW, historicalTask.getStatus(), "История должна сохранить оригинальный статус");
-        assertEquals(1, historicalTask.getId(), "История должна сохранить оригинальный ID");
+        assertEquals("Original", historicalTask.getName());
+        assertEquals("Original Description", historicalTask.getDescription());
+        assertEquals(Status.NEW, historicalTask.getStatus());
+        assertEquals(1, historicalTask.getId());
     }
 
     @Test
-    void historyContainsIndependentCopies() {
+    void historyHasCopies() {
         Task task = new Task("Test", "Description", 1, Status.NEW);
         historyManager.add(task);
 
-        // Изменяем оригинальную задачу
         task.setName("Changed");
 
-        // Задача в истории не должна измениться
-        assertNotEquals(task.getName(), historyManager.getHistory().get(0).getName(),
-                "Задача в истории не должна зависеть от изменений оригинала");
+        assertNotEquals(task.getName(), historyManager.getHistory().get(0).getName());
     }
 }
